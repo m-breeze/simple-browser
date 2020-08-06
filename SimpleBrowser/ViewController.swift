@@ -25,12 +25,15 @@ class ViewController: UIViewController, WKNavigationDelegate {
 		super.viewDidLoad()
 		
 		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
+		
 		progressView = UIProgressView(progressViewStyle: .default)
 		progressView.sizeToFit()
 		let progressButton = UIBarButtonItem(customView: progressView)
 		let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 		let refresh = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
-		toolbarItems = [progressButton, spacer, refresh]
+		let goBack = UIBarButtonItem(title: "<", style: .plain, target: webView, action: #selector(webView.goBack))
+		let goForward = UIBarButtonItem(title: ">", style: .plain, target: webView, action: #selector(webView.goForward))
+		toolbarItems = [goBack, goForward, progressButton, spacer, refresh]
 		navigationController?.isToolbarHidden = false
 		
 		webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
@@ -76,6 +79,9 @@ class ViewController: UIViewController, WKNavigationDelegate {
 					return   //exit the method now
 				}
 			}
+			let ac = UIAlertController(title: "Warning", message: "Website is not allowed", preferredStyle: .alert)
+			ac.addAction(UIAlertAction(title: "Ok", style: .cancel))
+			present(ac, animated: true)
 		}
 		decisionHandler(.cancel)
 	}
