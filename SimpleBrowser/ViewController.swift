@@ -13,8 +13,9 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
 	var webView: WKWebView!
 	var progressView: UIProgressView!
-	var websites = ["apple.com", "hackingwithswift.com"]
-	
+//	var websites = ["apple.com", "hackingwithswift.com"]
+	var website: String!
+
 	override func loadView() {
 		webView = WKWebView()
 		webView.navigationDelegate = self
@@ -24,7 +25,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
+//		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
 		
 		progressView = UIProgressView(progressViewStyle: .default)
 		progressView.sizeToFit()
@@ -33,31 +34,31 @@ class ViewController: UIViewController, WKNavigationDelegate {
 		let refresh = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
 		let goBack = UIBarButtonItem(title: "<", style: .plain, target: webView, action: #selector(webView.goBack))
 		let goForward = UIBarButtonItem(title: ">", style: .plain, target: webView, action: #selector(webView.goForward))
-		toolbarItems = [goBack, goForward, progressButton, spacer, refresh]
+		toolbarItems = [goBack,goForward, progressButton, spacer, refresh]
 		navigationController?.isToolbarHidden = false
 		
+		//for checking if our progress bar in action
 		webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
-		
-		let url = URL(string: "https://" + websites[0])!
+		let url = URL(string: "https://" + website)!
 		webView.load(URLRequest(url: url))
 		webView.allowsBackForwardNavigationGestures = true
 	}
 
+		//needed for action sheet
+//	@objc func openTapped() {
+//		let ac = UIAlertController(title: "Open page...", message: nil, preferredStyle: .actionSheet)
+//		for _ in website {
+//			ac.addAction(UIAlertAction(title: website, style: .default, handler: openPage))
+//		}
+//		ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+//		ac.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem  //for iPad
+//		present(ac, animated: true)
+//	}
 	
-	@objc func openTapped() {
-		let ac = UIAlertController(title: "Open page...", message: nil, preferredStyle: .actionSheet)
-		for website in websites {
-			ac.addAction(UIAlertAction(title: website, style: .default, handler: openPage))
-		}
-		ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-		ac.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem  //for iPad
-		present(ac, animated: true)
-	}
-	
-	func openPage(action: UIAlertAction) {
-		let url = URL(string: "https://" + action.title!)!
-		webView.load(URLRequest(url: url))
-	}
+//	func openPage(action: UIAlertAction) {
+//		let url = URL(string: "https://" + action.title!)!
+//		webView.load(URLRequest(url: url))
+//	}
 
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		title = webView.title
@@ -71,17 +72,17 @@ class ViewController: UIViewController, WKNavigationDelegate {
 	
 	func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
 		let url = navigationAction.request.url
-		
+
 		if let host = url?.host {
-			for website in websites {
-				if host.contains(website) {
+			for site in website {
+				if host.contains(site) {
 					decisionHandler(.allow)
-					return   //exit the method now
+					return
 				}
+//			let ac = UIAlertController(title: "Warning", message: "Website is not allowed", preferredStyle: .alert)
+//			ac.addAction(UIAlertAction(title: "Ok", style: .cancel))
+//			present(ac, animated: true)
 			}
-			let ac = UIAlertController(title: "Warning", message: "Website is not allowed", preferredStyle: .alert)
-			ac.addAction(UIAlertAction(title: "Ok", style: .cancel))
-			present(ac, animated: true)
 		}
 		decisionHandler(.cancel)
 	}
